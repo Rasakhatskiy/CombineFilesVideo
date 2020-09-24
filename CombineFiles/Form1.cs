@@ -1,25 +1,20 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CombineFiles
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
-        public Form1()
+        public FormMain()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button_openDir_Click(object sender, EventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();
             dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
@@ -30,6 +25,16 @@ namespace CombineFiles
             }
         }
 
+        private void button_start_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(textBox1.Text))
+            {
+                MessageBox.Show($"Directory {textBox1.Text} not found.");
+                return;
+            }
+            CombineFilesInFolder(textBox1.Text);
+            MessageBox.Show("Completed");
+        }
 
         private void CombineFilesInFolder(string path)
         {
@@ -43,16 +48,16 @@ namespace CombineFiles
             files.OrderBy(o => o).ToList();
 
             var nameFirst =
-                H.GetUntilOrEmpty(
+                Helper.GetUntilOrEmpty(
                     Path.GetFileName(
                         files.First()));
 
             var nameLast =
-                H.GetAfter(
+                Helper.GetAfter(
                     Path.GetFileName(
                         files.Last()));
 
-            var resultName = H.AvoidDuplicates($@"{Path.GetDirectoryName(files.First())}\{nameFirst}{nameLast}");
+            var resultName = Helper.AvoidDuplicates($@"{Path.GetDirectoryName(files.First())}\{nameFirst}{nameLast}");
 
             using (var outputStream = File.Create(resultName))
             {
@@ -65,33 +70,18 @@ namespace CombineFiles
                 }
             }
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if(!Directory.Exists(textBox1.Text))
-            {
-                MessageBox.Show($"Directory {textBox1.Text} not found.");
-                return;
-            }
-            CombineFilesInFolder(textBox1.Text);
-            MessageBox.Show("Completed");
-        }
     }
 
-    public static class H
+    public static class Helper
     {
         public static string GetUntilOrEmpty(this string text, string stopAt = "--")
         {
             if (!String.IsNullOrWhiteSpace(text))
             {
                 int charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
-
                 if (charLocation > 0)
-                {
                     return text.Substring(0, charLocation);
-                }
             }
-
             return String.Empty;
         }
 
@@ -100,13 +90,9 @@ namespace CombineFiles
             if (!String.IsNullOrWhiteSpace(text))
             {
                 int charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
-
                 if (charLocation > 0)
-                {
                     return text.Substring(charLocation, text.Length - charLocation);
-                }
             }
-
             return String.Empty;
         }
 
@@ -120,11 +106,9 @@ namespace CombineFiles
             if (File.Exists(desiredName))
             {
                 int copies = 2;
-                while (File.Exists(string.Format(@"{0}\{1}({2}){3}", dir, nameNoExtension, copies, extension)))
-                {
+                while (File.Exists(string.Format($@"{dir}\{nameNoExtension}({copies}){extension}")))
                     copies++;
-                }
-                return string.Format(@"{0}\{1}({2}){3}", dir, nameNoExtension, copies, extension);
+                return string.Format($@"{dir}\{nameNoExtension}({copies}){extension}");
             }
             else
             {

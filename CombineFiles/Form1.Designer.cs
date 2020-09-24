@@ -1,6 +1,6 @@
 ﻿namespace CombineFiles
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         /// Required designer variable.
@@ -41,7 +41,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "...";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.button_openDir_Click);
             // 
             // textBox1
             // 
@@ -58,7 +58,7 @@
             this.button2.TabIndex = 2;
             this.button2.Text = "Start";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.button_start_Click);
             // 
             // Form1
             // 
